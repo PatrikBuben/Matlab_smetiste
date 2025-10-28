@@ -1,0 +1,8 @@
+# Ignoruje docasne soubory MATLABu
+*.asv
+*.asv.*
+*.autosave
+.matlab/
+SimulinkProject/
+# Ignoruje macOS systemove soubory
+.DS_Store
