@@ -14,7 +14,7 @@ f = (0:N-1) * (frekvence_vzorkovani / N);
 
 F_abs = abs(F);
 f_plot = f(1:floor(N/2));
-F_magnituda_plot = F_abs(1:floor(N/2));
+F_abs_plot = F_abs(1:floor(N/2));
 
 figure;
 subplot(2, 1, 1)
@@ -26,7 +26,7 @@ grid
 hold on
 
 subplot(2, 1, 2)
-loglog(f_plot(2: end), F_magnituda_plot(2:end));
+loglog(f_plot(2: end), F_abs_plot(2:end));
 title('Puvodni amplitudove spektrum (obraz signalu)');
 xlabel('Frekvence [Hz]')
 ylabel('|F(f)|')
