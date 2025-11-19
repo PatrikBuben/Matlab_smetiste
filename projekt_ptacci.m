@@ -9,7 +9,7 @@ N = length(signal); %celkovy pocet vzorku
 t = (0:N-1)/frekvence_vzorkovani; %casova osa od 0 do delky signalu [vzorec T = 1/f proste]
 
 %transformace
-F = fft(signal); %fourier fast transformation
+F = fft(signal) / N; %fourier fast transformation
 f = (0:N-1) * (frekvence_vzorkovani / N);
 
 F_abs = abs(F);
@@ -35,18 +35,12 @@ hold on
 
 F_filtrovana = F; %zkopiroval jsem si spektrum, abych ho mohl filtrovat
 %ted podle grafu najdeme rusive frekvence ja jsem nasel (peaks kde to
-%vystreli jak kokot)
-% 10852 a 907.635, 10185.6, 728.567
-f_peak1 = 10852; %[Hz]
-f_peak2 = 907.635;
-f_peak3 = 10185.6;
-f_peak4 = 728.567;
-f_peak5 = 10900;
-f_peak6 = 12301;
-f_peak7 = 9162.74;
+%vystreli jak blazen)
 
-f_peaks = [f_peak1, f_peak2, f_peak3, f_peak4, f_peak5, f_peak6, f_peak7];
-sirka_pasma = 50; %timto odrezavame
+f_peak1 = 10852; %[Hz]
+f_peaks = f_peak1;
+
+sirka_pasma = 500; %timto odrezavame
 
 for peak_freq = f_peaks
 
@@ -92,3 +86,21 @@ f_normal = f_filtrovana / max_val;
 audiowrite('filtrovano.wav', f_normal, frekvence_vzorkovani);
 [novy_signal, nova_fs] = audioread('/Users/patrikbuben/Desktop/BPC-SAS/cvikahome/filtrovano.wav');
 sound(novy_signal, nova_fs);
+
+%% filtr 2 radu (ukol 2)
+p = tf('p');
+Fs = frekvence_vzorkovani; 
+
+f_ruseni = 10852;
+w_ruseni = 2 * pi * f_ruseni; 
+
+w0 = 3 * w_ruseni; 
+
+%F(p) pro HPF: F(p) = p^2 / (p^2 + 2*w0*p + w0^2)
+system = (p^2) / (p^2 + 2 * w0 * p + w0^2);
+
+% Vykreslení frekvenční charakteristiky (Bodeho diagram)
+figure('Name', 'Úkol 2: Bodeho diagram Horní propusti');
+bode(system);
+grid on;
+title(['Frekvenční charakteristika HPF, w0 = ' num2str(w0, '%.1f') ' rad/s']);
