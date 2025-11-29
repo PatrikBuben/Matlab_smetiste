@@ -37,12 +37,10 @@ F_filtrovana = F; %zkopiroval jsem si spektrum, abych ho mohl filtrovat
 %ted podle grafu najdeme rusive frekvence ja jsem nasel (peaks kde to
 %vystreli jak blazen)
 
-f_peak1 = 10852; %[Hz]
-f_peaks = f_peak1;
+f_peak = 10884; %[Hz]
+sirka_pasma = 80; %timto odrezavame
 
-sirka_pasma = 500; %timto odrezavame
-
-for peak_freq = f_peaks
+for peak_freq = f_peak
 
     %tip4 - symetricka frekvence = spektrum real sig musi byt sym (je
     %zrcadlem --> "gumujeme" jak nas peak tak zrcadlovy
@@ -91,16 +89,17 @@ sound(novy_signal, nova_fs);
 p = tf('p');
 Fs = frekvence_vzorkovani; 
 
-f_ruseni = 10852;
+f_ruseni = 10884;
 w_ruseni = 2 * pi * f_ruseni; 
 
 w0 = 3 * w_ruseni; 
 
-%F(p) pro HPF: F(p) = p^2 / (p^2 + 2*w0*p + w0^2)
-system = (p^2) / (p^2 + 2 * w0 * p + w0^2);
+%F(p) pro DPF: F(p) = w0^2 / (p^2 + 2*w0*p + w0^2)
+system = (w0^2) / (p^2 + 2 * w0 * p + w0^2);
 
-% Vykreslení frekvenční charakteristiky (Bodeho diagram)
-figure('Name', 'Úkol 2: Bodeho diagram Horní propusti');
+figure('Name', 'Úkol 2: Bodeho diagram Dorní propusti');
 bode(system);
 grid on;
-title(['Frekvenční charakteristika HPF, w0 = ' num2str(w0, '%.1f') ' rad/s']);
+title('Frekvenční charakteristika DPF');
+
+%% diskretizace
