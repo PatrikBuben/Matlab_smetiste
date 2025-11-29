@@ -148,3 +148,6 @@ title('Fázová char.');
 grid on;
 
 %% ukol4
+clc 
+clf
+clearvars
