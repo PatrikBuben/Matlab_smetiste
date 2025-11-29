@@ -136,14 +136,14 @@ grid on;
 % C) Amplitudová charakteristika
 subplot(2, 2, 3);
 h = bodeplot(system_P, system_Z, system_P_c2d);
-setoptions(h, 'FreqUnits', 'Hz', 'PhaseVisible', 'off'); 
+setoptions(h, 'FreqUnits', 'rad/s', 'PhaseVisible', 'off'); 
 title('Amplitudová char.');
 grid on;
 
 % D) Fázová charakteristika
 subplot(2, 2, 4);
 h = bodeplot(system_P, system_Z, system_P_c2d);
-setoptions(h, 'FreqUnits', 'Hz', 'MagVisible', 'off'); 
+setoptions(h, 'FreqUnits', 'rad/s', 'MagVisible', 'off'); 
 title('Fázová char.');
 grid on;
 
