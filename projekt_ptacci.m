@@ -16,7 +16,7 @@ F_abs = abs(F);
 f_plot = f(1:floor(N/2));
 F_abs_plot = F_abs(1:floor(N/2));
 
-figure;
+figure('Name', 'Úkol 1: Filtrace signalu');
 subplot(2, 1, 1)
 plot(t, signal)
 title('Puvodni signal (ptacci)')
@@ -72,7 +72,7 @@ F_filtrovana_abs = abs(F_filtrovana);
 F_filtrovana_abs_plot = F_filtrovana_abs(1:floor(N/2));
 
 subplot(2, 1, 2);
-loglog(f_plot(2:end), F_filtrovana_abs_plot(2:end), "r");
+loglog(f_plot(2:end), F_filtrovana_abs_plot(2:end), "yellow");
 legend('Puvodni spektrum', 'Filtrovane spektrum');
 hold off;
 
@@ -102,52 +102,98 @@ grid on;
 title('Frekvenční charakteristika DPF');
 
 %% diskretizace
-
 z = tf('z', 1/frekvence_vzorkovani); 
 Ts = 1 / frekvence_vzorkovani;
 
+E = exp(-w0 * Ts);
 
-a = exp(-w0 * Ts);          
-k = w0^2 * Ts^2;        
+% Koeficienty odvozené metodou ZOH:
+num_b1 = 1 - E - w0*Ts*E;
+num_b0 = E^2 - E + w0*Ts*E;
+den_a1 = -2*E;
+den_a0 = E^2;
 
-
-system_Z = (k * a * z) / (z - a)^2;
-%zkrácení zlomků, pokud tam jsou nějaká malá čísla
+system_Z = (num_b1 * z + num_b0) / (z^2 + den_a1 * z + den_a0);
 system_Z = minreal(system_Z, 1e-4);
 
-system_P_c2d = c2d(system_P, Ts, 'impulse');
 
-figure('Name', 'Úkol 3: Porovnání spojitého, analytického a c2d filtru');
+system_P_c2d = c2d(system_P, Ts, 'zoh'); 
+%kdyz pouziji 'zoh' tak se kryji
 
-% A) Přechodová charakteristika (Step)
+figure('Name', 'Úkol 3: Diskretizace');
+
+%Přechodová charakteristika
 subplot(2, 2, 1);
-step(system_P, 'b', system_Z, 'r', system_P_c2d, 'g--'); 
+step(system_P, 'b', system_Z, 'r--', system_P_c2d, 'g:'); 
 legend('Spojitý', 'Analytický', 'Matlab c2d');
-title('Přechodová charakteristika');
+title('Přechodová char.'); 
 grid on;
 
-% B) Impulzová charakteristika (Impulse)
+%Impulzová charakteristika
 subplot(2, 2, 2);
-impulse(system_P, 'b', system_Z, 'r', system_P_c2d, 'g--');
-legend('Spojitý', 'Analytický', 'Matlab c2d');
-title('Impulzová charakteristika');
+impulse(system_P, 'b', system_Z, 'r--', system_P_c2d, 'g:');
+title('Impulzová char.'); 
 grid on;
 
-% C) Amplitudová charakteristika
+%Amplitudová charakteristika
 subplot(2, 2, 3);
 h = bodeplot(system_P, system_Z, system_P_c2d);
 setoptions(h, 'FreqUnits', 'rad/s', 'PhaseVisible', 'off'); 
-title('Amplitudová char.');
+title('Amplitudová char.'); 
 grid on;
 
-% D) Fázová charakteristika
+%Fázová charakteristika
 subplot(2, 2, 4);
 h = bodeplot(system_P, system_Z, system_P_c2d);
 setoptions(h, 'FreqUnits', 'rad/s', 'MagVisible', 'off'); 
-title('Fázová char.');
+title('Fázová char.'); 
 grid on;
 
-%% ukol4
-clc 
-clf
-clearvars
+%% --- ÚKOL 4: Realizace číslicového filtru (Diferenční rovnice) ---
+
+B_coeffs = [0, num_b1, num_b0];
+A_coeffs = [1, den_a1, den_a0];
+
+
+y_loop = zeros(size(signal)); % Inicializace výstupního pole nulami
+x = signal; % Pro přehlednost v rovnici
+
+% Diferenční rovnice:
+% y[n] = b1*x[n-1] + b0*x[n-2] - a1*y[n-1] - a0*y[n-2]
+% Pozor: Matlab indexuje od 1, takže n odpovídá indexu k.
+% Musíme začít od k=3, abychom mohli sáhnout na k-2.
+
+for k = 3:length(x)
+    y_loop(k) = B_coeffs(2)*x(k-1) + B_coeffs(3)*x(k-2) ...
+              - A_coeffs(2)*y_loop(k-1) - A_coeffs(3)*y_loop(k-2);
+end
+
+y_filter = filter(B_coeffs, A_coeffs, signal);
+
+figure('Name', 'Úkol 1: Realizace cislicoveho filtru');
+
+
+%původní signál s rušením
+subplot(2, 1, 1);
+plot(t, signal, 'Color', [0.7 0.7 0.7]);
+hold on;
+title('Původní zašuměný signál');
+xlabel('Čas [s]'); ylabel('Amplituda');
+grid on;
+
+subplot(2, 1, 2);
+
+plot(t, y_loop, 'b', 'LineWidth', 1.5); 
+hold on;
+
+plot(t, y_filter, 'g--', 'LineWidth', 2);
+
+plot(t, f_filtrovana, 'r', 'LineWidth', 1);
+
+legend('For cyklus', 'Funkce filter()', 'Úkol 1');
+title('Porovnání filtrovaných signálů');
+xlabel('Čas [s]'); ylabel('Amplituda');
+grid on;
+
+%zoom
+%xlim([0 0.01]);
