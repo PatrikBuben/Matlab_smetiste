@@ -158,11 +158,6 @@ A_coeffs = [1, den_a1, den_a0];
 y_loop = zeros(size(signal)); % Inicializace výstupního pole nulami
 x = signal; % Pro přehlednost v rovnici
 
-% Diferenční rovnice:
-% y[n] = b1*x[n-1] + b0*x[n-2] - a1*y[n-1] - a0*y[n-2]
-% Pozor: Matlab indexuje od 1, takže n odpovídá indexu k.
-% Musíme začít od k=3, abychom mohli sáhnout na k-2.
-
 for k = 3:length(x)
     y_loop(k) = B_coeffs(2)*x(k-1) + B_coeffs(3)*x(k-2) ...
               - A_coeffs(2)*y_loop(k-1) - A_coeffs(3)*y_loop(k-2);
