@@ -107,7 +107,7 @@ Ts = 1 / frekvence_vzorkovani;
 
 E = exp(-w0 * Ts);
 
-% Koeficienty odvozené metodou ZOH:
+% Koeficienty
 num_b1 = 1 - E - w0*Ts*E;
 num_b0 = E^2 - E + w0*Ts*E;
 den_a1 = -2*E;
@@ -118,7 +118,7 @@ system_Z = minreal(system_Z, 1e-4);
 
 
 system_P_c2d = c2d(system_P, Ts, 'zoh'); 
-%kdyz pouziji 'zoh' tak se kryji
+
 
 figure('Name', 'Úkol 3: Diskretizace');
 
@@ -149,6 +149,8 @@ setoptions(h, 'FreqUnits', 'rad/s', 'MagVisible', 'off');
 title('Fázová char.'); 
 grid on;
 
+
+
 %% --- ÚKOL 4: Realizace číslicového filtru (Diferenční rovnice) ---
 
 B_coeffs = [0, num_b1, num_b0];
@@ -172,12 +174,11 @@ figure('Name', 'Úkol 1: Realizace cislicoveho filtru');
 subplot(2, 1, 1);
 plot(t, signal, 'Color', [0.7 0.7 0.7]);
 hold on;
-title('Původní zašuměný signál');
+title('Původní signál');
 xlabel('Čas [s]'); ylabel('Amplituda');
 grid on;
 
 subplot(2, 1, 2);
-
 plot(t, y_loop, 'b', 'LineWidth', 1.5); 
 hold on;
 
@@ -190,5 +191,5 @@ title('Porovnání filtrovaných signálů');
 xlabel('Čas [s]'); ylabel('Amplituda');
 grid on;
 
-%zoom
-%xlim([0 0.01]);
+zoom
+xlim([0 0.1]);
